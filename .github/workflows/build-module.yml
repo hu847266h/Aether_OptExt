@@ -15,10 +15,9 @@ jobs:
           sudo apt-get install -y clang-19 llvm-19-dev lld-19 libelf-dev zlib1g-dev
           echo "/usr/lib/llvm-19/bin" >> $GITHUB_PATH
 
-      - name: Setup Rust nightly + targets
+      - name: Setup Rust nightly + android target
         run: |
           rustup toolchain install nightly --profile minimal --component rust-src
-          rustup target add bpfel-unknown-none --toolchain nightly
           rustup target add aarch64-linux-android
 
       - name: Install bpf-linker
@@ -36,16 +35,11 @@ jobs:
           cp target/bpfel-unknown-none/release/aether-ebpf ../ebpf_target.o
           ls -la ../ebpf_target.o
 
-      - name: Setup Android NDK
-        uses: android-actions/setup-android@v3
-        with:
-          api-level: 34
-          ndk-version: 25.2.9519653
-
       - name: Build + package module
         env:
-          ANDROID_NDK_HOME: ${{ github.workspace }}/ndk/25.2.9519653
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/25.2.9519653
         run: |
+          ls /usr/local/lib/android/sdk/ndk/ || true
           python3 build.py
 
       - name: Upload artifact
