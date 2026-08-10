@@ -30,8 +30,8 @@ jobs:
         env:
           LLVM_SYS_190_PREFIX: /usr/lib/llvm-19
         run: |
-          # LLVM 19 removed -Os; use O2 instead
-          sed -i 's/opt-level = "s"/opt-level = "2"/' ebpf/Cargo.toml
+          # LLVM 19 removed -Os; use O2 (integer form, new cargo rejects "2" string)
+          sed -i 's/opt-level = "s"/opt-level = 2/' ebpf/Cargo.toml
           cd ebpf
           cargo +nightly build --target bpfel-unknown-none --release -Zbuild-std=core
           cp target/bpfel-unknown-none/release/aether-ebpf ../ebpf_target.o
